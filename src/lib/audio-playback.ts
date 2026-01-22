@@ -95,8 +95,6 @@ export class GroovePlayer {
       const toneSwing = (swingPercent - 50) / 25; // 0 to 1 range
       Tone.getTransport().swing = toneSwing;
       Tone.getTransport().swingSubdivision = '8n';
-    } else {
-      Tone.getTransport().swing = 0;
     }
 
     // Create the pattern based on groove type

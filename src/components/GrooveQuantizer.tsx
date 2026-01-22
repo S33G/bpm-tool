@@ -17,11 +17,13 @@ export function GrooveQuantizer({ bpm }: GrooveQuantizerProps) {
   const [playingGroove, setPlayingGroove] = useState<'straight' | 'swing' | 'triplet' | null>(null);
   const { showToast } = useToast();
   const playerRef = useRef<GroovePlayer | null>(null);
-  const playbackDisabled = true;
-  const playbackTooltip = 'Coming soon';
+  const [isClient, setIsClient] = useState(false);
+  const playbackDisabled = false;
+  const playbackTooltip = '';
 
   // Initialize audio player
   useEffect(() => {
+    setIsClient(true);
     playerRef.current = new GroovePlayer();
     return () => {
       playerRef.current?.dispose();
@@ -40,25 +42,25 @@ export function GrooveQuantizer({ bpm }: GrooveQuantizerProps) {
   const gridNotes = generateGridNotes(barDurationMs, subdivision, swingPercent);
 
   // Audio playback handlers
-  const handlePlayToggle = async (grooveType: 'straight' | 'swing' | 'triplet') => {
-    if (!playerRef.current) return;
+   const handlePlayToggle = async (grooveType: 'straight' | 'swing' | 'triplet') => {
+     if (!playerRef.current || !isClient) return;
 
-    try {
-      if (playingGroove === grooveType) {
-        // Stop if clicking the same groove
-        playerRef.current.stop();
-        setPlayingGroove(null);
-      } else {
-        // Stop any currently playing groove and start new one
-        // Always pass the current swingPercent, even for non-swing grooves
-        await playerRef.current.play(bpm, grooveType, swingPercent);
-        setPlayingGroove(grooveType);
-      }
-    } catch (error) {
-      showToast('Failed to play audio', 'error');
-      console.error('Playback error:', error);
-    }
-  };
+     try {
+       if (playingGroove === grooveType) {
+         // Stop if clicking the same groove
+         playerRef.current.stop();
+         setPlayingGroove(null);
+       } else {
+         // Stop any currently playing groove and start new one
+         // Always pass the current swingPercent, even for non-swing grooves
+         await playerRef.current.play(bpm, grooveType, swingPercent);
+         setPlayingGroove(grooveType);
+       }
+     } catch (error) {
+       showToast('Failed to play audio', 'error');
+       console.error('Playback error:', error);
+     }
+   };
 
   // Stop playback when BPM changes
   useEffect(() => {
@@ -73,7 +75,7 @@ export function GrooveQuantizer({ bpm }: GrooveQuantizerProps) {
 
   // Update swing in real-time when slider changes (if swing groove is playing)
   useEffect(() => {
-    if (playingGroove === 'swing' && playerRef.current) {
+    if (playingGroove === 'swing' && playerRef.current && playerRef.current.isPlaying()) {
       playerRef.current.updateSwing(swingPercent);
     }
   }, [swingPercent, playingGroove]);
@@ -153,192 +155,73 @@ export function GrooveQuantizer({ bpm }: GrooveQuantizerProps) {
         </div>
       </div>
 
-      {/* Visual Timeline */}
-      <div className="mb-6">
-        <h4 className="mb-4 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Visual Timeline (1 bar @ {bpm} BPM)
-        </h4>
-        <div className="space-y-6">
-          {/* Straight grid */}
-          <div>
-            <div className="mb-6 flex items-center justify-between">
-              <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Straight</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handlePlayToggle('straight')}
-                  disabled={playbackDisabled}
-                  title={playbackDisabled ? playbackTooltip : undefined}
-                  aria-disabled={playbackDisabled}
-                  className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                    playbackDisabled
-                      ? 'cursor-not-allowed bg-zinc-200/70 text-zinc-400 dark:bg-zinc-700/70 dark:text-zinc-500'
-                      : ''
-                  } ${
-                    playingGroove === 'straight'
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600'
-                  }`}
-                >
-                  {playingGroove === 'straight' ? (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                  {playingGroove === 'straight' ? 'Stop' : 'Play'}
-                </button>
-                <button
-                  onClick={() => handleExportMidi('straight')}
-                  className="flex items-center gap-1 rounded bg-zinc-200 px-2 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  MIDI
-                </button>
-              </div>
-            </div>
-            <div className="relative h-8 rounded-lg bg-zinc-100 dark:bg-zinc-700/50">
-              {gridNotes.straight.map((note, i) => (
-                <div
-                  key={`straight-${i}`}
-                  className="absolute top-0 h-full w-0.5 bg-zinc-400 dark:bg-zinc-500"
-                  style={{ left: `${note.position * 100}%` }}
-                >
-                  {i % (subdivision / 4) === 0 && (
-                    <span className="absolute -top-6 -translate-x-1/2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                      {note.label}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Swing grid */}
-          <div>
-            <div className="mb-6 flex items-center justify-between">
-              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                Swing ({swingPercent.toFixed(1)}%)
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handlePlayToggle('swing')}
-                  disabled={playbackDisabled}
-                  title={playbackDisabled ? playbackTooltip : undefined}
-                  aria-disabled={playbackDisabled}
-                  className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                    playbackDisabled
-                      ? 'cursor-not-allowed bg-blue-100/70 text-blue-300 dark:bg-blue-900/30 dark:text-blue-500'
-                      : ''
-                  } ${
-                    playingGroove === 'swing'
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70'
-                  }`}
-                >
-                  {playingGroove === 'swing' ? (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                  {playingGroove === 'swing' ? 'Stop' : 'Play'}
-                </button>
-                <button
-                  onClick={() => handleExportMidi('swing')}
-                  className="flex items-center gap-1 rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70"
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  MIDI
-                </button>
-              </div>
-            </div>
-            <div className="relative h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-              {gridNotes.swing.map((note, i) => (
-                <div
-                  key={`swing-${i}`}
-                  className="absolute top-0 h-full w-0.5 bg-blue-500 dark:bg-blue-400"
-                  style={{ left: `${note.position * 100}%` }}
-                >
-                  {i % (subdivision / 4) === 0 && (
-                    <span className="absolute -top-6 -translate-x-1/2 text-xs font-medium text-blue-600 dark:text-blue-400">
-                      {note.label}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Triplet grid */}
-          <div>
-            <div className="mb-6 flex items-center justify-between">
-              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Triplet (66.67%)</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handlePlayToggle('triplet')}
-                  disabled={playbackDisabled}
-                  title={playbackDisabled ? playbackTooltip : undefined}
-                  aria-disabled={playbackDisabled}
-                  className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                    playbackDisabled
-                      ? 'cursor-not-allowed bg-purple-100/70 text-purple-300 dark:bg-purple-900/30 dark:text-purple-500'
-                      : ''
-                  } ${
-                    playingGroove === 'triplet'
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70'
-                  }`}
-                >
-                  {playingGroove === 'triplet' ? (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                  {playingGroove === 'triplet' ? 'Stop' : 'Play'}
-                </button>
-                <button
-                  onClick={() => handleExportMidi('triplet')}
-                  className="flex items-center gap-1 rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70"
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  MIDI
-                </button>
-              </div>
-            </div>
-            <div className="relative h-8 rounded-lg bg-purple-50 dark:bg-purple-900/20">
-              {gridNotes.triplet.map((note, i) => (
-                <div
-                  key={`triplet-${i}`}
-                  className="absolute top-0 h-full w-0.5 bg-purple-500 dark:bg-purple-400"
-                  style={{ left: `${note.position * 100}%` }}
-                >
-                  {i % 3 === 0 && (
-                    <span className="absolute -top-6 -translate-x-1/2 text-xs font-medium text-purple-600 dark:text-purple-400">
-                      {note.label}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+       {/* Visual Timeline */}
+       <div className="mb-6">
+         <h4 className="mb-4 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+           Visual Timeline (1 bar @ {bpm} BPM)
+         </h4>
+         <div className="relative h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+           {gridNotes.swing.map((note, i) => (
+             <div
+               key={`swing-${i}`}
+               className="absolute top-0 h-full w-0.5 bg-blue-500 dark:bg-blue-400"
+               style={{ left: `${note.position * 100}%` }}
+             >
+               {i % (subdivision / 4) === 0 && (
+                 <span className="absolute -top-6 -translate-x-1/2 text-xs font-medium text-blue-600 dark:text-blue-400">
+                   {note.label}
+                 </span>
+               )}
+             </div>
+           ))}
+         </div>
+         
+         {/* Single Play Button */}
+         <div className="mt-6 flex flex-col items-center gap-4">
+           <button
+             onClick={() => handlePlayToggle('swing')}
+             disabled={playbackDisabled}
+             title={playbackDisabled ? playbackTooltip : undefined}
+             aria-disabled={playbackDisabled}
+             className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+               playbackDisabled
+                 ? 'cursor-not-allowed bg-blue-100/70 text-blue-300 dark:bg-blue-900/30 dark:text-blue-500'
+                 : ''
+             } ${
+               playingGroove === 'swing'
+                 ? 'bg-green-500 text-white hover:bg-green-600'
+                 : 'bg-blue-500 text-white hover:bg-blue-600'
+             }`}
+           >
+             {playingGroove === 'swing' ? (
+               <>
+                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                   <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                 </svg>
+                 Stop
+               </>
+             ) : (
+               <>
+                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                   <path d="M8 5v14l11-7z" />
+                 </svg>
+                 Play
+               </>
+             )}
+             <span>Play Current Swing ({swingPercent.toFixed(1)}%)</span>
+           </button>
+           
+           <button
+             onClick={() => handleExportMidi('swing')}
+             className="flex items-center gap-2 rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70"
+           >
+             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+             </svg>
+             Download MIDI
+           </button>
+         </div>
+       </div>
 
       {/* Timing information */}
       <div className="space-y-3">
