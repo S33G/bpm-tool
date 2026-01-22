@@ -1,65 +1,137 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { BpmInput } from '@/components/BpmInput';
+import { TapTempo } from '@/components/TapTempo';
+import { NoteGrid } from '@/components/NoteGrid';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { ToastContainer } from '@/components/Toast';
+import { BookmarkBar } from '@/components/BookmarkBar';
+import { GenrePresets } from '@/components/GenrePresets';
+import { DelayCalculator } from '@/components/DelayCalculator';
+import { FrequencyDisplay } from '@/components/FrequencyDisplay';
+import { GrooveQuantizer } from '@/components/GrooveQuantizer';
+import { useBpmCalculations } from '@/hooks/useBpmCalculations';
+import { DEFAULT_BPM } from '@/lib/constants';
 
 export default function Home() {
+  const [bpm, setBpm] = useState(DEFAULT_BPM);
+  const [showHz, setShowHz] = useState(false);
+  const { notes, delaySuggestions } = useBpmCalculations(bpm);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <h1 className="text-xl font-bold text-zinc-900 dark:text-white">
+            BPM Tool
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        {/* Hero Section */}
+        <section className="mb-8 text-center">
+          <h2 className="mb-2 text-3xl font-bold text-zinc-900 dark:text-white">
+            BPM to Milliseconds Calculator
+          </h2>
+          <p className="mx-auto max-w-2xl text-zinc-600 dark:text-zinc-400">
+            Precisely time your compressors, limiters, reverbs, delays, and other audio effects.
+            Perfect for Ableton, FL Studio, Pro Tools, or any DAW.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        </section>
+
+        {/* Controls Section */}
+        <section className="mb-8 flex flex-col items-center gap-6 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800 sm:flex-row sm:justify-center">
+          <BpmInput value={bpm} onChange={setBpm} />
+          <div className="hidden h-20 w-px bg-zinc-200 dark:bg-zinc-700 sm:block" />
+          <TapTempo onBpmDetected={setBpm} />
+        </section>
+
+        {/* Genre Presets */}
+        <section className="mb-6">
+          <GenrePresets currentBpm={bpm} onSelectBpm={setBpm} />
+        </section>
+
+        {/* Bookmarks */}
+        <section className="mb-8">
+          <BookmarkBar currentBpm={bpm} onSelectBpm={setBpm} />
+        </section>
+
+        {/* Options */}
+        <section className="mb-6 flex items-center gap-4">
+          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <input
+              type="checkbox"
+              checked={showHz}
+              onChange={(e) => setShowHz(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-300 accent-blue-500"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            Show frequency (Hz)
+          </label>
+        </section>
+
+        {/* Note Values Grid */}
+        <section className="mb-8">
+          <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
+            Note Values
+          </h3>
+          <NoteGrid notes={notes} showHz={showHz} />
+        </section>
+
+        {/* Frequency Section */}
+        <section className="mb-8">
+          <FrequencyDisplay notes={notes} />
+        </section>
+
+        {/* Delay Calculator */}
+        <section className="mb-8">
+          <DelayCalculator delaySuggestions={delaySuggestions} />
+        </section>
+
+        {/* Groove Quantization */}
+        <section className="mb-8">
+          <GrooveQuantizer bpm={bpm} />
+        </section>
+
+        {/* Info Section */}
+        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+          <h3 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">
+            How it works
+          </h3>
+          <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
+            <p>
+              The formula to convert BPM to milliseconds is simple:
+            </p>
+            <div className="rounded-lg bg-zinc-100 p-4 font-mono dark:bg-zinc-700">
+              <p className="text-zinc-900 dark:text-white">60,000 ms / BPM = ms per quarter note</p>
+              <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+                Example: 60,000 / {bpm} = {(60000 / bpm).toFixed(2)} ms
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <h4 className="font-medium text-zinc-800 dark:text-zinc-200">Dotted Notes</h4>
+                <p>Multiply by 1.5 (150% of straight note value)</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-zinc-800 dark:text-zinc-200">Triplet Notes</h4>
+                <p>Multiply by 2/3 (66.67% of straight note value)</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p>Use these values for sidechaining, reverb decay, delay times, and more.</p>
+      </footer>
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }
