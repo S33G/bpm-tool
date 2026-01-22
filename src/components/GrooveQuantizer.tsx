@@ -18,8 +18,8 @@ export function GrooveQuantizer({ bpm }: GrooveQuantizerProps) {
   const { showToast } = useToast();
   const playerRef = useRef<GroovePlayer | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const playbackDisabled = false;
-  const playbackTooltip = '';
+  const playbackDisabled = true;
+  const playbackTooltip = 'Coming soon';
 
   // Initialize audio player
   useEffect(() => {
