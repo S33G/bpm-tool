@@ -3,8 +3,7 @@
  */
 
 import { Midi } from '@tonejs/midi';
-
-export type GrooveType = 'straight' | 'swing' | 'triplet';
+import { GrooveType } from './types';
 
 interface DrumNote {
   time: number;    // Time in seconds
@@ -194,9 +193,6 @@ function generateTripletPattern(barStart: number, quarterNote: number): DrumNote
   return notes;
 }
 
-/**
- * Download MIDI file to user's computer
- */
 export function downloadMidiFile(midiData: Uint8Array, filename: string) {
   const blob = new Blob([midiData as BlobPart], { type: 'audio/midi' });
   const url = URL.createObjectURL(blob);
@@ -207,4 +203,33 @@ export function downloadMidiFile(midiData: Uint8Array, filename: string) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function generateChordMidi(
+  midiNotes: number[],
+  bpm: number,
+  durationBars: number = 1,
+  velocity: number = 80
+): Uint8Array {
+  const midi = new Midi();
+  midi.header.setTempo(bpm);
+  
+  const track = midi.addTrack();
+  track.name = 'Chord';
+  track.channel = 0;
+  
+  const quarterNoteTime = 60 / bpm;
+  const barTime = quarterNoteTime * 4;
+  const totalDuration = barTime * durationBars;
+  
+  midiNotes.forEach((note) => {
+    track.addNote({
+      midi: note,
+      time: 0,
+      duration: totalDuration - 0.05,
+      velocity: velocity / 127,
+    });
+  });
+  
+  return midi.toArray();
 }

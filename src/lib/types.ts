@@ -28,3 +28,5 @@ export interface Bookmark {
 }
 
 export type Theme = 'light' | 'dark' | 'system';
+
+export type GrooveType = 'straight' | 'swing' | 'triplet';

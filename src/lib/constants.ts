@@ -24,9 +24,10 @@ export const VARIATION_MULTIPLIERS = {
 } as const;
 
 export const STORAGE_KEYS = {
-  BOOKMARKS: 'bpmtool-bookmarks',
-  THEME: 'bpmtool-theme',
-  LAST_BPM: 'bpmtool-last-bpm',
+  BOOKMARKS: 'tunetool-bookmarks',
+  THEME: 'tunetool-theme',
+  LAST_BPM: 'tunetool-last-bpm',
+  SETLISTS: 'tunetool-setlists',
 } as const;
 
 export const TAP_TEMPO_TIMEOUT = 2000; // Reset after 2 seconds of no taps
