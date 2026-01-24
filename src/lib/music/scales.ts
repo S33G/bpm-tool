@@ -3,7 +3,7 @@ import { NoteName, transposeNote, INTERVAL_NAMES } from './notes';
 export interface ScaleDefinition {
   name: string;
   intervals: number[];
-  category: 'major' | 'minor' | 'modes' | 'pentatonic' | 'other';
+  category: 'major' | 'minor' | 'modes' | 'pentatonic' | 'japanese' | 'other';
 }
 
 export const SCALE_DEFINITIONS: Record<string, ScaleDefinition> = {
@@ -22,6 +22,13 @@ export const SCALE_DEFINITIONS: Record<string, ScaleDefinition> = {
   majorPentatonic: { name: 'Major Pentatonic', intervals: [0, 2, 4, 7, 9], category: 'pentatonic' },
   minorPentatonic: { name: 'Minor Pentatonic', intervals: [0, 3, 5, 7, 10], category: 'pentatonic' },
   blues: { name: 'Blues', intervals: [0, 3, 5, 6, 7, 10], category: 'pentatonic' },
+  
+  hirajoshi: { name: 'Hirajoshi', intervals: [0, 2, 3, 7, 8], category: 'japanese' },
+  insen: { name: 'Insen', intervals: [0, 1, 5, 7, 10], category: 'japanese' },
+  kumoi: { name: 'Kumoi', intervals: [0, 2, 3, 7, 9], category: 'japanese' },
+  yo: { name: 'Yo', intervals: [0, 2, 5, 7, 9], category: 'japanese' },
+  ritsu: { name: 'Ritsu', intervals: [0, 2, 5, 7, 9, 11], category: 'japanese' },
+  iwato: { name: 'Iwato', intervals: [0, 1, 5, 6, 10], category: 'japanese' },
   
   wholeTone: { name: 'Whole Tone', intervals: [0, 2, 4, 6, 8, 10], category: 'other' },
   diminished: { name: 'Diminished (W-H)', intervals: [0, 2, 3, 5, 6, 8, 9, 11], category: 'other' },
