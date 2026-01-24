@@ -1,5 +1,7 @@
 'use client';
 
+import { ValidatedNumberInput } from '@/components/ValidatedNumberInput';
+
 interface TimerControlsProps {
   workSeconds: number;
   restSeconds: number;
@@ -25,37 +27,37 @@ export function TimerControls({
 }: TimerControlsProps) {
   return (
     <div className="flex flex-wrap items-end gap-4">
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Work (sec)</label>
-        <input
-          type="number"
+      <div className="w-32">
+        <ValidatedNumberInput
+          label="Work (sec)"
+          value={workSeconds}
+          onChange={onWorkChange}
           min={10}
           max={3600}
-          value={workSeconds}
-          onChange={(e) => onWorkChange(parseInt(e.target.value, 10) || 0)}
-          className="h-10 w-28 rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+          step={1}
+          helperText="10–3600"
         />
       </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Rest (sec)</label>
-        <input
-          type="number"
+      <div className="w-32">
+        <ValidatedNumberInput
+          label="Rest (sec)"
+          value={restSeconds}
+          onChange={onRestChange}
           min={0}
           max={3600}
-          value={restSeconds}
-          onChange={(e) => onRestChange(parseInt(e.target.value, 10) || 0)}
-          className="h-10 w-28 rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+          step={1}
+          helperText="0–3600"
         />
       </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Rounds</label>
-        <input
-          type="number"
+      <div className="w-28">
+        <ValidatedNumberInput
+          label="Rounds"
+          value={rounds}
+          onChange={onRoundsChange}
           min={1}
           max={20}
-          value={rounds}
-          onChange={(e) => onRoundsChange(parseInt(e.target.value, 10) || 1)}
-          className="h-10 w-24 rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+          step={1}
+          helperText="1–20"
         />
       </div>
       <button

@@ -1,6 +1,6 @@
 import { ToolCard } from '@/components/home';
 
-const TOOLS = [
+const MUSIC_TOOLS = [
   {
     href: '/bpm',
     title: 'BPM Tool',
@@ -155,7 +155,131 @@ const TOOLS = [
       </svg>
     ),
   },
+  {
+    href: '/timing/groove',
+    title: 'Groove Quantizer',
+    description: 'Swing grids and MIDI export for groove manipulation.',
+    color: 'pink' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
+      </svg>
+    ),
+  },
 ];
+
+const SOUND_TOOLS = [
+  {
+    href: '/sound/delay',
+    title: 'Delay Calculator',
+    description: 'Calculate speaker delay times for live sound alignment. Adjust for temperature.',
+    color: 'teal' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+      </svg>
+    ),
+  },
+  {
+    href: '/sound/room-modes',
+    title: 'Room Mode Visualizer',
+    description: '3D visualization of standing waves and acoustic treatment placement.',
+    color: 'teal' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    ),
+  },
+  {
+    href: '/sound/impedance',
+    title: 'Impedance Calculator',
+    description: 'Check headphone/amp matching and speaker wiring configurations.',
+    color: 'teal' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/sound/limiter',
+    title: 'Limiter Calculator',
+    description: 'Calculate limiter thresholds to protect speakers from damage.',
+    color: 'teal' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
+];
+
+const GEEK_TOOLS = [
+  {
+    href: '/geeks/lpad',
+    title: 'L-Pad Calculator',
+    description: 'Calculate resistor values to attenuate drivers without changing impedance.',
+    color: 'slate' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      </svg>
+    ),
+  },
+  {
+    href: '/geeks/sub-enclosure',
+    title: 'Subwoofer Enclosure',
+    description: 'Calculate box volume and port tuning from Thiele-Small parameters.',
+    color: 'slate' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    ),
+  },
+  {
+    href: '/geeks/crossover',
+    title: 'Crossover Designer',
+    description: 'Design passive crossovers with component values and schematics.',
+    color: 'slate' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+      </svg>
+    ),
+  },
+];
+
+type ToolColor = 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'cyan' | 'yellow' | 'teal' | 'slate';
+
+interface Tool {
+  href: string;
+  title: string;
+  description: string;
+  color: ToolColor;
+  icon: React.ReactNode;
+}
+
+function CategorySection({ title, description, tools }: { 
+  title: string; 
+  description: string; 
+  tools: Tool[];
+}) {
+  return (
+    <section className="mb-14">
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">{title}</h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">{description}</p>
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {tools.map((tool) => (
+          <ToolCard key={tool.href} {...tool} />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -170,11 +294,23 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {TOOLS.map((tool) => (
-          <ToolCard key={tool.href} {...tool} />
-        ))}
-      </section>
+      <CategorySection 
+        title="Music & Timing" 
+        description="Theory, visualization, and timing tools for musicians and producers."
+        tools={MUSIC_TOOLS} 
+      />
+
+      <CategorySection 
+        title="Sound Tools" 
+        description="Live sound, acoustics, and audio engineering utilities."
+        tools={SOUND_TOOLS} 
+      />
+
+      <CategorySection 
+        title="Geeks" 
+        description="DIY audio electronics and speaker building calculators."
+        tools={GEEK_TOOLS} 
+      />
     </main>
   );
 }

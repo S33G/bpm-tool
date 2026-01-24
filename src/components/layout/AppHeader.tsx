@@ -21,6 +21,13 @@ const NAV_ITEMS = [
   { href: '/keyfinder', label: 'Key Finder', category: 'Keyboard & Fretboard' },
   { href: '/setlist', label: 'Setlist', category: 'Utility' },
   { href: '/midi', label: 'MIDI', category: 'Utility' },
+  { href: '/geeks/crossover', label: 'Crossover', category: 'Geeks' },
+  { href: '/geeks/lpad', label: 'L-Pad', category: 'Geeks' },
+  { href: '/geeks/sub-enclosure', label: 'Sub-Enclosure', category: 'Geeks' },
+  { href: '/sound/delay', label: 'Delay', category: 'Sound Tools' },
+  { href: '/sound/impedance', label: 'Impedance', category: 'Sound Tools' },
+  { href: '/sound/limiter', label: 'Limiter', category: 'Sound Tools' },
+  { href: '/sound/room-modes', label: 'Room Modes', category: 'Sound Tools' },
 ] as const;
 
 export function AppHeader() {
@@ -32,12 +39,17 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 border-b border-white/50 bg-white/70 shadow-sm backdrop-blur-xl fade-up dark:border-white/10 dark:bg-zinc-950/60">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-xl font-semibold tracking-tight text-zinc-900 transition-all hover:-translate-y-0.5 hover:text-blue-600 dark:text-white dark:hover:text-blue-300"
-          >
-            GrooveLab
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="text-xl font-semibold tracking-tight text-zinc-900 transition-all hover:-translate-y-0.5 hover:text-blue-600 dark:text-white dark:hover:text-blue-300"
+            >
+              GrooveLab
+            </Link>
+            <span className="inline-flex items-center rounded-full bg-amber-100/80 px-2.5 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-200/50 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-800/50">
+              Beta
+            </span>
+          </div>
           <nav className="hidden md:flex items-center gap-3">
             {categories.map((category, categoryIndex) => {
               const items = NAV_ITEMS.filter((item) => item.category === category);

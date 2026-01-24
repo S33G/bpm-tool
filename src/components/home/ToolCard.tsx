@@ -6,7 +6,7 @@ interface ToolCardProps {
   title: string;
   description: string;
   icon: ReactNode;
-  color?: 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'cyan' | 'yellow';
+  color?: 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'cyan' | 'yellow' | 'teal' | 'slate';
 }
 
 const colorClasses = {
@@ -17,6 +17,8 @@ const colorClasses = {
   pink: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
   cyan: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
   yellow: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
+  teal: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400',
+  slate: 'bg-slate-200 text-slate-600 dark:bg-slate-800/50 dark:text-slate-400',
 };
 
 export function ToolCard({ href, title, description, icon, color = 'blue' }: ToolCardProps) {
