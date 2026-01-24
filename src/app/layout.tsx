@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="antialiased">
         <ThemeProvider>
           <ToastProvider>
-            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex flex-col">
+            <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col">
               <AppHeader />
               <div className="flex-1">
                 {children}

@@ -23,15 +23,15 @@ export function ToolCard({ href, title, description, icon, color = 'blue' }: Too
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-zinc-600"
+      className="group fade-up flex flex-col rounded-2xl border border-white/70 bg-white/80 p-6 shadow-lg shadow-zinc-900/5 backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/90 hover:shadow-xl hover:shadow-zinc-900/10 dark:border-white/10 dark:bg-zinc-900/70 dark:hover:border-white/20"
     >
-      <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${colorClasses[color]}`}>
+      <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl shadow-sm ${colorClasses[color]}`}>
         {icon}
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-zinc-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+      <h3 className="mb-2 text-lg font-semibold text-zinc-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-300">
         {title}
       </h3>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-zinc-600 dark:text-zinc-300">
         {description}
       </p>
     </Link>

@@ -1,22 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
-  --font-family: Arial, Helvetica, sans-serif;
+  --background: #f6f4f1;
+  --foreground: #121212;
+  --font-family: "Space Grotesk", "SF Pro Text", "Segoe UI", sans-serif;
+  --font-mono: "Source Code Pro", "SFMono-Regular", ui-monospace, monospace;
 }
 
 .dark {
-  --background: #18181b;
-  --foreground: #ededed;
+  --background: #0f1115;
+  --foreground: #f2f2f2;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(99, 102, 241, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.1), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(244, 243, 240, 0.9));
   color: var(--foreground);
   font-family: var(--font-family);
+  min-height: 100vh;
+}
+
+a,
+button {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+.dark body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.12), transparent 55%),
+    linear-gradient(180deg, rgba(11, 13, 18, 0.9), rgba(15, 17, 21, 0.95));
 }
 
 /* Custom animations */
@@ -31,6 +54,27 @@ body {
   }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 .animate-in {
   animation-duration: 150ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -39,6 +83,14 @@ body {
 
 .slide-in-from-bottom-2 {
   animation-name: slide-in-from-bottom-2;
+}
+
+.fade-up {
+  animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.float-soft {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Remove number input spinners */
@@ -57,8 +109,8 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   height: 6px;
-  border-radius: 3px;
-  background: #d1d5db;
+  border-radius: 999px;
+  background: #d4d4d8;
 }
 
 .dark input[type="range"] {
