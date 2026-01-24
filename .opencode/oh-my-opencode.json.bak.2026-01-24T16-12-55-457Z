@@ -1,6 +1,6 @@
 {
   "agents": {
-    "sisyphus": {
+    "Sisyphus": {
       "permission": {
         "ls": "allow",
         "ls *": "allow",
