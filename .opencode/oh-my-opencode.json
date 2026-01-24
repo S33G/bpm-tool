@@ -1,0 +1,24 @@
+{
+  "agents": {
+    "Sisyphus": {
+      "permission": {
+        "ls": "allow",
+        "ls *": "allow",
+        "cat *": "allow",
+        "git status": "allow",
+        "git log": "allow",
+        "npm test": "allow",
+        "*": "ask",
+        "doom_loop": "ask",
+        "external_directory": "allow",
+        "edit": "allow"
+      }
+    },
+    "Polaris-Smart": {
+      "permission": {
+        "bash": "allow",
+        "edit": "allow"
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@
 
 import { Midi } from '@tonejs/midi';
 import { GrooveType } from './types';
+import { RhythmPattern } from './rhythm/grid';
 
 interface DrumNote {
   time: number;    // Time in seconds
@@ -231,5 +232,48 @@ export function generateChordMidi(
     });
   });
   
+  return midi.toArray();
+}
+
+export function generateRhythmMidi(
+  pattern: RhythmPattern,
+  bpm: number,
+  bars: number = 1
+): Uint8Array {
+  const midi = new Midi();
+  midi.header.setTempo(bpm);
+
+  const track = midi.addTrack();
+  track.name = 'Rhythm Grid';
+  track.channel = 9;
+
+  const quarterNoteTime = 60 / bpm;
+  const barTime = quarterNoteTime * 4;
+  const stepTime = barTime / pattern.steps;
+
+  const drumMap: Record<string, number> = {
+    kick: 36,
+    snare: 38,
+    hat: 42,
+    clap: 39,
+    perc: 46,
+  };
+
+  for (let bar = 0; bar < bars; bar++) {
+    const barStart = bar * barTime;
+    Object.entries(pattern.tracks).forEach(([trackName, steps]) => {
+      const midiNote = drumMap[trackName] ?? 36;
+      steps.forEach((step, index) => {
+        if (!step.active) return;
+        track.addNote({
+          midi: midiNote,
+          time: barStart + index * stepTime,
+          duration: stepTime * 0.8,
+          velocity: step.accent ? Math.min(1, step.velocity + 0.2) : step.velocity,
+        });
+      });
+    });
+  }
+
   return midi.toArray();
 }

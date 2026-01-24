@@ -39,6 +39,7 @@ export const CHORD_DEFINITIONS: Record<string, ChordDefinition> = {
 export type ChordQuality = keyof typeof CHORD_DEFINITIONS;
 
 export type Inversion = 'root' | 'first' | 'second' | 'third';
+export type Voicing = 'close' | 'open' | 'drop2';
 
 export interface Chord {
   root: NoteName;
@@ -103,6 +104,52 @@ export function buildChord(
   };
 }
 
+export interface ChordVoicingOptions {
+  voicing?: Voicing;
+  bassNote?: NoteName | null;
+  octaveShift?: number;
+}
+
+function resolveBassMidi(bassNote: NoteName, referenceMidi: number): number {
+  let octave = Math.floor(referenceMidi / 12) - 2;
+  let midi = noteToMidi(bassNote, octave);
+  while (midi >= referenceMidi) {
+    octave -= 1;
+    midi = noteToMidi(bassNote, octave);
+  }
+  return midi;
+}
+
+export function applyChordVoicing(chord: Chord, options: ChordVoicingOptions = {}): Chord {
+  const { voicing = 'close', bassNote, octaveShift = 0 } = options;
+  let midiNotes = [...chord.midiNotes].sort((a, b) => a - b);
+
+  if (voicing === 'open') {
+    midiNotes = midiNotes.map((note, index) => (index % 2 === 1 ? note + 12 : note));
+  } else if (voicing === 'drop2' && midiNotes.length >= 3) {
+    const dropIndex = midiNotes.length - 2;
+    midiNotes[dropIndex] -= 12;
+    midiNotes = midiNotes.sort((a, b) => a - b);
+  }
+
+  if (octaveShift !== 0) {
+    midiNotes = midiNotes.map((note) => note + octaveShift * 12);
+  }
+
+  let symbol = chord.symbol;
+  if (bassNote && bassNote !== chord.root) {
+    symbol = `${symbol}/${bassNote}`;
+    const bassMidi = resolveBassMidi(bassNote, midiNotes[0]);
+    midiNotes = [bassMidi, ...midiNotes];
+  }
+
+  return {
+    ...chord,
+    midiNotes,
+    symbol,
+  };
+}
+
 export function getChordNoteWithInterval(chord: Chord, index: number): { note: NoteName; interval: string } {
   const definition = CHORD_DEFINITIONS[chord.quality];
   const interval = definition.intervals[index % definition.intervals.length];
@@ -126,7 +173,9 @@ export function getChordCategories(): Array<{ category: string; chords: ChordQua
 export function generateChordFilename(
   chord: Chord,
   instrument: Instrument,
-  bpm: number
+  bpm: number,
+  voicing: Voicing = 'close',
+  bassNote?: NoteName | null
 ): string {
   const inversionSuffix = chord.inversion === 'root' ? 'Root' : 
     chord.inversion === 'first' ? '1st' : 
@@ -134,6 +183,8 @@ export function generateChordFilename(
   
   const sanitizedQuality = CHORD_DEFINITIONS[chord.quality].symbol || 'maj';
   const instrumentCapitalized = instrument.charAt(0).toUpperCase() + instrument.slice(1);
+  const voicingLabel = voicing === 'close' ? 'Close' : voicing === 'open' ? 'Open' : 'Drop2';
+  const bassLabel = bassNote ? `_${bassNote}` : '';
   
-  return `${chord.root}${sanitizedQuality}_${instrumentCapitalized}_${inversionSuffix}_${bpm}.mid`;
+  return `${chord.root}${sanitizedQuality}_${instrumentCapitalized}_${inversionSuffix}_${voicingLabel}${bassLabel}_${bpm}.mid`;
 }

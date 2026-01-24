@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ToolLayout } from '@/components/layout';
-import { PitchDisplay, TunerNeedle, NoteHistory, HistoryNote } from '@/components/pitch';
+import { PitchDisplay, TunerNeedle, NoteHistory, SpectrumVisualizer, HistoryNote } from '@/components/pitch';
 import { PitchDetector, PitchResult } from '@/lib/audio/pitch-detection';
 
 export default function PitchAnalyzerPage() {
@@ -10,6 +10,9 @@ export default function PitchAnalyzerPage() {
   const [pitch, setPitch] = useState<PitchResult | null>(null);
   const [history, setHistory] = useState<HistoryNote[]>([]);
   const [a4, setA4] = useState(440);
+  const [noiseGate, setNoiseGate] = useState(0.01);
+  const [showSpectrum, setShowSpectrum] = useState(false);
+  const [spectrum, setSpectrum] = useState<Float32Array | null>(null);
   const [error, setError] = useState<string | null>(null);
   
   const detectorRef = useRef<PitchDetector | null>(null);
@@ -37,7 +40,7 @@ export default function PitchAnalyzerPage() {
   const startListening = async () => {
     setError(null);
     try {
-      detectorRef.current = new PitchDetector(handlePitch, a4);
+      detectorRef.current = new PitchDetector(handlePitch, a4, noiseGate, setSpectrum);
       await detectorRef.current.start();
       setIsListening(true);
     } catch (err) {
@@ -59,6 +62,12 @@ export default function PitchAnalyzerPage() {
       detectorRef.current.setA4(a4);
     }
   }, [a4]);
+
+  useEffect(() => {
+    if (detectorRef.current) {
+      detectorRef.current.setNoiseGate(noiseGate);
+    }
+  }, [noiseGate]);
   
   useEffect(() => {
     return () => {
@@ -138,6 +147,30 @@ export default function PitchAnalyzerPage() {
             />
             <span className="text-sm text-zinc-500">Hz</span>
           </div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <input
+                type="checkbox"
+                checked={showSpectrum}
+                onChange={(e) => setShowSpectrum(e.target.checked)}
+                className="h-4 w-4 rounded border-zinc-300 accent-blue-500"
+              />
+              Show spectrum
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">Noise gate</span>
+              <input
+                type="range"
+                min={0.005}
+                max={0.05}
+                step={0.005}
+                value={noiseGate}
+                onChange={(e) => setNoiseGate(parseFloat(e.target.value))}
+                className="accent-blue-500"
+              />
+              <span className="text-xs text-zinc-500">{noiseGate.toFixed(3)}</span>
+            </div>
+          </div>
         </div>
       </section>
       
@@ -176,6 +209,14 @@ export default function PitchAnalyzerPage() {
         </div>
         <NoteHistory history={history} />
       </section>
+      {showSpectrum && (
+        <section className="mt-6 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+          <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
+            Spectrum
+          </h3>
+          <SpectrumVisualizer spectrum={spectrum} />
+        </section>
+      )}
     </ToolLayout>
   );
 }

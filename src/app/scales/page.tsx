@@ -9,14 +9,17 @@ import {
   ScaleType, 
   buildScale,
   noteToMidi,
-  SCALE_DEFINITIONS 
+  SCALE_DEFINITIONS,
+  INTERVAL_NAMES
 } from '@/lib/music';
+import { printElementHtml } from '@/lib/export';
 
 export default function ScaleExplorerPage() {
   const [root, setRoot] = useState<NoteName>('C');
   const [scaleType, setScaleType] = useState<ScaleType>('major');
   
   const scale = buildScale(root, scaleType);
+  const formula = scale.intervals.map((interval) => INTERVAL_NAMES[interval]).join(' - ');
   
   const startMidi = noteToMidi('C', 3);
   const endMidi = noteToMidi('B', 5);
@@ -33,6 +36,25 @@ export default function ScaleExplorerPage() {
           onRootChange={setRoot}
           onScaleTypeChange={setScaleType}
         />
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            Formula: <span className="font-mono text-zinc-900 dark:text-zinc-200">{formula}</span>
+          </div>
+          <button
+            onClick={() => {
+              const html = `
+                <h1>${scale.name}</h1>
+                <p><strong>Formula:</strong> ${formula}</p>
+                <p><strong>Notes:</strong> ${scale.notes.join(', ')}</p>
+                <p><strong>Intervals:</strong> ${scale.intervals.join(', ')}</p>
+              `;
+              printElementHtml(`${scale.name} Scale`, html);
+            }}
+            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+          >
+            Export PDF
+          </button>
+        </div>
       </section>
       
       <div className="mb-8 grid gap-6 lg:grid-cols-2">

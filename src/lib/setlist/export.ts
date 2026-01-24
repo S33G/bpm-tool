@@ -35,7 +35,7 @@ export function importSetlistFromJson(json: string): Setlist | null {
   }
 }
 
-export function printSetlist(setlist: Setlist): void {
+export function printSetlist(setlist: Setlist, compact: boolean = false): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
   
@@ -49,22 +49,22 @@ export function printSetlist(setlist: Setlist): void {
           font-family: system-ui, -apple-system, sans-serif;
           max-width: 800px;
           margin: 0 auto;
-          padding: 20px;
+          padding: ${compact ? '10px' : '20px'};
         }
         h1 {
           border-bottom: 2px solid #333;
-          padding-bottom: 10px;
+          padding-bottom: ${compact ? '6px' : '10px'};
         }
         .song {
           border: 1px solid #ddd;
           border-radius: 8px;
-          padding: 15px;
-          margin-bottom: 15px;
+          padding: ${compact ? '8px' : '15px'};
+          margin-bottom: ${compact ? '8px' : '15px'};
         }
         .song-title {
-          font-size: 1.2em;
+          font-size: ${compact ? '1em' : '1.2em'};
           font-weight: bold;
-          margin-bottom: 8px;
+          margin-bottom: ${compact ? '4px' : '8px'};
         }
         .song-meta {
           display: flex;
@@ -73,13 +73,20 @@ export function printSetlist(setlist: Setlist): void {
           font-size: 0.9em;
         }
         .song-notes {
-          margin-top: 10px;
+          margin-top: ${compact ? '4px' : '10px'};
           font-style: italic;
           color: #555;
         }
         .song-number {
           color: #999;
           font-size: 0.9em;
+        }
+        .section {
+          margin-top: ${compact ? '10px' : '20px'};
+          margin-bottom: ${compact ? '6px' : '10px'};
+          font-weight: bold;
+          text-transform: uppercase;
+          color: #444;
         }
         @media print {
           .song { break-inside: avoid; }
@@ -89,6 +96,7 @@ export function printSetlist(setlist: Setlist): void {
     <body>
       <h1>${setlist.name}</h1>
       ${setlist.items.map((item, index) => `
+        ${item.section ? `<div class="section">${item.section}</div>` : ''}
         <div class="song">
           <div class="song-title">
             <span class="song-number">${index + 1}.</span> ${item.title}
@@ -97,6 +105,7 @@ export function printSetlist(setlist: Setlist): void {
             ${item.bpm ? `<span>BPM: ${item.bpm}</span>` : ''}
             ${item.key ? `<span>Key: ${item.key}</span>` : ''}
             ${item.timeSignature ? `<span>Time: ${item.timeSignature}</span>` : ''}
+            ${item.tags && item.tags.length > 0 ? `<span>Tags: ${item.tags.join(', ')}</span>` : ''}
           </div>
           ${item.notes ? `<div class="song-notes">${item.notes}</div>` : ''}
         </div>

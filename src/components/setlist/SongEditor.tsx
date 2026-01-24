@@ -16,6 +16,8 @@ export function SongEditor({ item, onSave, onCancel }: SongEditorProps) {
   const [key, setKey] = useState(item?.key || '');
   const [timeSignature, setTimeSignature] = useState(item?.timeSignature || '');
   const [notes, setNotes] = useState(item?.notes || '');
+  const [section, setSection] = useState(item?.section || '');
+  const [tags, setTags] = useState(item?.tags?.join(', ') || '');
   
   const handleSave = () => {
     if (!title.trim()) return;
@@ -27,6 +29,11 @@ export function SongEditor({ item, onSave, onCancel }: SongEditorProps) {
       key: key || undefined,
       timeSignature: timeSignature || undefined,
       notes: notes.trim() || undefined,
+      section: section.trim() || undefined,
+      tags: tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
     });
   };
   
@@ -110,6 +117,32 @@ export function SongEditor({ item, onSave, onCancel }: SongEditorProps) {
           rows={2}
           className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-600 dark:bg-zinc-900"
         />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            Section
+          </label>
+          <input
+            type="text"
+            value={section}
+            onChange={(e) => setSection(e.target.value)}
+            placeholder="Intro, Verse, Chorus"
+            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-600 dark:bg-zinc-900"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            Tags
+          </label>
+          <input
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="acoustic, fast, opener"
+            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-600 dark:bg-zinc-900"
+          />
+        </div>
       </div>
       
       <div className="flex justify-end gap-2">

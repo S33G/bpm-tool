@@ -16,6 +16,8 @@ import {
   CHORD_DEFINITIONS,
   SCALE_DEFINITIONS,
   noteToMidi,
+  getChordNoteWithInterval,
+  getScaleNoteWithInterval,
 } from '@/lib/music';
 
 type HighlightMode = 'none' | 'chord' | 'scale' | 'custom';
@@ -42,6 +44,8 @@ export default function KeyboardVisualizerPage() {
   const [startOctave, setStartOctave] = useState(3);
   const [octaveCount, setOctaveCount] = useState(4);
   const [highlightMode, setHighlightMode] = useState<HighlightMode>('chord');
+  const [labelMode, setLabelMode] = useState<'note' | 'interval'>('note');
+  const [colorMode, setColorMode] = useState<'single' | 'degree'>('single');
   
   const [root, setRoot] = useState<NoteName>('C');
   const [chordQuality, setChordQuality] = useState<ChordQuality>('maj');
@@ -84,6 +88,24 @@ export default function KeyboardVisualizerPage() {
   
   const highlightedNotes = getHighlightedNotes();
   const highlightedMidi = getHighlightedMidi();
+
+  const intervalLabelMap = {} as Record<NoteName, string>;
+  const degreeColorMap = {} as Record<NoteName, string>;
+  const degreeColors = ['#3b82f6', '#8b5cf6', '#22c55e', '#f97316', '#ec4899', '#06b6d4', '#eab308'];
+
+  if (highlightMode === 'chord') {
+    const chord = buildChord(root, chordQuality);
+    chord.notes.forEach((note, index) => {
+      intervalLabelMap[note] = getChordNoteWithInterval(chord, index).interval;
+      degreeColorMap[note] = degreeColors[index % degreeColors.length];
+    });
+  } else if (highlightMode === 'scale') {
+    const scale = buildScale(root, scaleType);
+    scale.notes.forEach((note, index) => {
+      intervalLabelMap[note] = getScaleNoteWithInterval(scale, index).interval;
+      degreeColorMap[note] = degreeColors[index % degreeColors.length];
+    });
+  }
   
   const getTitle = (): string => {
     switch (highlightMode) {
@@ -120,6 +142,24 @@ export default function KeyboardVisualizerPage() {
               { value: 'chord', label: 'Chord' },
               { value: 'scale', label: 'Scale' },
               { value: 'custom', label: 'Custom (Click)' },
+            ]}
+          />
+          <Select
+            label="Labels"
+            value={labelMode}
+            onChange={(v) => setLabelMode(v as 'note' | 'interval')}
+            options={[
+              { value: 'note', label: 'Note' },
+              { value: 'interval', label: 'Interval' },
+            ]}
+          />
+          <Select
+            label="Color"
+            value={colorMode}
+            onChange={(v) => setColorMode(v as 'single' | 'degree')}
+            options={[
+              { value: 'single', label: 'Single' },
+              { value: 'degree', label: 'By Degree' },
             ]}
           />
         </div>
@@ -172,6 +212,8 @@ export default function KeyboardVisualizerPage() {
           highlightedMidi={highlightedMidi}
           onKeyClick={handleKeyClick}
           showLabels={octaveCount <= 4}
+          labelMap={labelMode === 'interval' ? intervalLabelMap : undefined}
+          highlightMap={colorMode === 'degree' ? degreeColorMap : undefined}
         />
       </section>
       
@@ -189,7 +231,7 @@ export default function KeyboardVisualizerPage() {
                 ))
               : highlightedNotes.map((note, i) => (
                   <span key={i} className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                    {note}
+                    {labelMode === 'interval' ? `${note} (${intervalLabelMap[note] || ''})` : note}
                   </span>
                 ))
             }

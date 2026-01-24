@@ -2,20 +2,31 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRef } from 'react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const NAV_ITEMS = [
-  { href: '/bpm', label: 'BPM Tool' },
-  { href: '/chords', label: 'Chords' },
-  { href: '/keyboard', label: 'Keyboard' },
-  { href: '/pitch', label: 'Pitch' },
-  { href: '/metronome', label: 'Metronome' },
-  { href: '/scales', label: 'Scales' },
-  { href: '/setlist', label: 'Setlist' },
+  { href: '/bpm', label: 'BPM Tool', category: 'Timing' },
+  { href: '/metronome', label: 'Metronome', category: 'Timing' },
+  { href: '/rhythm', label: 'Rhythm', category: 'Timing' },
+  { href: '/timing/groove', label: 'Groove Quantizer', category: 'Timing' },
+  { href: '/timer', label: 'Timer', category: 'Timing' },
+  { href: '/chords', label: 'Chords', category: 'Chords & Scales' },
+  { href: '/scales', label: 'Scales', category: 'Chords & Scales' },
+  { href: '/circle', label: 'Circle', category: 'Chords & Scales' },
+  { href: '/progression', label: 'Progression', category: 'Chords & Scales' },
+  { href: '/keyboard', label: 'Keyboard', category: 'Keyboard & Fretboard' },
+  { href: '/fretboard', label: 'Fretboard', category: 'Keyboard & Fretboard' },
+  { href: '/pitch', label: 'Pitch', category: 'Keyboard & Fretboard' },
+  { href: '/keyfinder', label: 'Key Finder', category: 'Keyboard & Fretboard' },
+  { href: '/setlist', label: 'Setlist', category: 'Utility' },
+  { href: '/midi', label: 'MIDI', category: 'Utility' },
 ] as const;
 
 export function AppHeader() {
   const pathname = usePathname();
+  const categories = [...new Set(NAV_ITEMS.map((item) => item.category))];
+  const dropdownRefs = useRef<HTMLDetailsElement[]>([]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80">
@@ -27,21 +38,71 @@ export function AppHeader() {
           >
             tunetool
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map(({ href, label }) => {
-              const isActive = pathname === href;
+          <nav className="hidden md:flex items-center gap-3">
+            {categories.map((category, categoryIndex) => {
+              const items = NAV_ITEMS.filter((item) => item.category === category);
+              const isCategoryActive = items.some((item) => item.href === pathname);
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
-                  }`}
+                <details
+                  key={category}
+                  className="group relative"
+                  ref={(element) => {
+                    if (element) {
+                      dropdownRefs.current[categoryIndex] = element;
+                    }
+                  }}
+                  onToggle={(event) => {
+                    const target = event.currentTarget;
+                    if (!target.open) {
+                      return;
+                    }
+                    dropdownRefs.current.forEach((detail, detailIndex) => {
+                      if (detail && detailIndex !== categoryIndex) {
+                        detail.open = false;
+                      }
+                    });
+                  }}
                 >
-                  {label}
-                </Link>
+                  <summary
+                    className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors list-none ${
+                      isCategoryActive
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+                    }`}
+                  >
+                    {category}
+                    <svg
+                      className="h-4 w-4 transition-transform group-open:rotate-180"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="absolute left-0 top-full mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                    {items.map(({ href, label }) => {
+                      const isActive = pathname === href;
+                      return (
+                        <Link
+                          key={href}
+                          href={href}
+                          className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                            isActive
+                              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                              : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+                          }`}
+                        >
+                          {label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </details>
               );
             })}
           </nav>
@@ -67,23 +128,33 @@ function MobileNav({ pathname }: { pathname: string }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </summary>
-        <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-          {NAV_ITEMS.map(({ href, label }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
-                }`}
-              >
-                {label}
-              </Link>
-            );
-          })}
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+          {(() => {
+            const categories = [...new Set(NAV_ITEMS.map(item => item.category))];
+            return categories.map((category) => (
+              <div key={category} className="mb-3 last:mb-0">
+                <div className="px-2 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wide dark:text-zinc-400">
+                  {category}
+                </div>
+                {NAV_ITEMS.filter(item => item.category === category).map(({ href, label }) => {
+                  const isActive = pathname === href;
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                          : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
+            ));
+          })()}
         </div>
       </details>
     </div>

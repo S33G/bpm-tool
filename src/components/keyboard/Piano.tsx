@@ -10,6 +10,8 @@ interface PianoProps {
   highlightedMidi?: number[];
   highlightedNotes?: NoteName[];
   highlightColor?: string;
+  highlightMap?: Record<NoteName, string>;
+  labelMap?: Record<NoteName, string>;
   onKeyClick?: (midi: number) => void;
   showLabels?: boolean;
 }
@@ -20,6 +22,8 @@ export function Piano({
   highlightedMidi = [],
   highlightedNotes = [],
   highlightColor = 'blue',
+  highlightMap,
+  labelMap,
   onKeyClick,
   showLabels = true,
 }: PianoProps) {
@@ -99,9 +103,10 @@ export function Piano({
             height={whiteKeyHeight}
             isBlack={false}
             isHighlighted={isHighlighted(midi)}
-            highlightColor={highlightColor}
+            highlightColor={highlightMap?.[midiToNoteName(midi)] || highlightColor}
             onClick={onKeyClick}
             showLabel={showLabels}
+            labelOverride={labelMap?.[midiToNoteName(midi)]}
           />
         ))}
         
@@ -115,9 +120,10 @@ export function Piano({
             height={blackKeyHeight}
             isBlack={true}
             isHighlighted={isHighlighted(midi)}
-            highlightColor={highlightColor}
+            highlightColor={highlightMap?.[midiToNoteName(midi)] || highlightColor}
             onClick={onKeyClick}
             showLabel={false}
+            labelOverride={labelMap?.[midiToNoteName(midi)]}
           />
         ))}
       </svg>

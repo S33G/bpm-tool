@@ -51,6 +51,11 @@ export function SongCard({
       </span>
       
       <div className="flex-1">
+        {item.section && (
+          <div className="text-xs font-semibold uppercase text-zinc-400">
+            {item.section}
+          </div>
+        )}
         <div className="font-medium text-zinc-900 dark:text-white">
           {item.title}
         </div>
@@ -58,6 +63,7 @@ export function SongCard({
           {item.bpm && <span>BPM: {item.bpm}</span>}
           {item.key && <span>Key: {item.key}</span>}
           {item.timeSignature && <span>Time: {item.timeSignature}</span>}
+          {item.tags && item.tags.length > 0 && <span>Tags: {item.tags.join(', ')}</span>}
         </div>
         {item.notes && (
           <div className="mt-1 text-sm italic text-zinc-400">

@@ -5,6 +5,8 @@ export interface SetlistItem {
   key?: string;
   timeSignature?: string;
   notes?: string;
+  section?: string;
+  tags?: string[];
   chords?: string[];
 }
 

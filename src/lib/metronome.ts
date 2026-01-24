@@ -5,6 +5,7 @@ export interface MetronomeConfig {
   timeSignature: TimeSignature;
   subdivision: 1 | 2 | 4;
   accentFirst: boolean;
+  accentPattern?: boolean[];
 }
 
 export interface MetronomeState {
@@ -89,7 +90,11 @@ export class MetronomeEngine {
   private scheduleNote(): void {
     if (!this.audioContext) return;
     
-    const isAccent = this.currentBeat === 0 && this.currentSubdivision === 0 && this.config.accentFirst;
+    const isAccent = this.currentSubdivision === 0 && (
+      this.config.accentPattern
+        ? this.config.accentPattern[this.currentBeat]
+        : this.config.accentFirst && this.currentBeat === 0
+    );
     
     const osc = this.audioContext.createOscillator();
     const gain = this.audioContext.createGain();

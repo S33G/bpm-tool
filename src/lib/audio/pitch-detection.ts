@@ -10,7 +10,8 @@ export interface PitchResult {
 
 export function autoCorrelate(
   buffer: Float32Array<ArrayBuffer>,
-  sampleRate: number
+  sampleRate: number,
+  minRms: number = 0.01
 ): number {
   const SIZE = buffer.length;
   const MAX_SAMPLES = Math.floor(SIZE / 2);
@@ -26,7 +27,7 @@ export function autoCorrelate(
   }
   rms = Math.sqrt(rms / SIZE);
   
-  if (rms < 0.01) return -1;
+  if (rms < minRms) return -1;
   
   let lastCorrelation = 1;
   for (let offset = 0; offset < MAX_SAMPLES; offset++) {
@@ -60,9 +61,10 @@ export function autoCorrelate(
 export function detectPitch(
   buffer: Float32Array<ArrayBuffer>,
   sampleRate: number,
-  a4: number = 440
+  a4: number = 440,
+  minRms: number = 0.01
 ): PitchResult | null {
-  const frequency = autoCorrelate(buffer, sampleRate);
+  const frequency = autoCorrelate(buffer, sampleRate, minRms);
   
   if (frequency === -1 || frequency < 20 || frequency > 4200) {
     return null;
@@ -91,14 +93,19 @@ export class PitchDetector {
   private analyser: AnalyserNode | null = null;
   private mediaStream: MediaStream | null = null;
   private dataArray: Float32Array<ArrayBuffer> | null = null;
+  private frequencyArray: Float32Array<ArrayBuffer> | null = null;
   private isRunning = false;
   private a4: number;
+  private minRms: number;
   private onPitch: (result: PitchResult | null) => void;
+  private onSpectrum?: (data: Float32Array) => void;
   private animationId: number | null = null;
   
-  constructor(onPitch: (result: PitchResult | null) => void, a4: number = 440) {
+  constructor(onPitch: (result: PitchResult | null) => void, a4: number = 440, minRms: number = 0.01, onSpectrum?: (data: Float32Array) => void) {
     this.onPitch = onPitch;
     this.a4 = a4;
+    this.minRms = minRms;
+    this.onSpectrum = onSpectrum;
   }
   
   async start(): Promise<void> {
@@ -114,6 +121,7 @@ export class PitchDetector {
       source.connect(this.analyser);
       
       this.dataArray = new Float32Array(this.analyser.fftSize);
+      this.frequencyArray = new Float32Array(this.analyser.frequencyBinCount);
       this.isRunning = true;
       this.detect();
     } catch (error) {
@@ -146,13 +154,22 @@ export class PitchDetector {
   setA4(freq: number): void {
     this.a4 = freq;
   }
+
+  setNoiseGate(minRms: number): void {
+    this.minRms = minRms;
+  }
   
   private detect = (): void => {
     if (!this.isRunning || !this.analyser || !this.dataArray || !this.audioContext) return;
     
     this.analyser.getFloatTimeDomainData(this.dataArray);
-    const result = detectPitch(this.dataArray, this.audioContext.sampleRate, this.a4);
+    const result = detectPitch(this.dataArray, this.audioContext.sampleRate, this.a4, this.minRms);
     this.onPitch(result);
+
+    if (this.frequencyArray && this.onSpectrum) {
+      this.analyser.getFloatFrequencyData(this.frequencyArray);
+      this.onSpectrum(this.frequencyArray);
+    }
     
     this.animationId = requestAnimationFrame(this.detect);
   };

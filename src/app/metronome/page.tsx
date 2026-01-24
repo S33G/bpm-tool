@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { ToolLayout } from '@/components/layout';
 import { BpmInput } from '@/components/BpmInput';
 import { TapTempo } from '@/components/TapTempo';
-import { MetronomeDisplay, MetronomeControls } from '@/components/metronome';
+import { MetronomeDisplay, MetronomeControls, BeatGrid } from '@/components/metronome';
 import { MetronomeEngine, TimeSignature } from '@/lib/metronome';
 import { DEFAULT_BPM } from '@/lib/constants';
 
@@ -13,6 +13,8 @@ export default function MetronomePage() {
   const [timeSignature, setTimeSignature] = useState<TimeSignature>('4/4');
   const [subdivision, setSubdivision] = useState<1 | 2 | 4>(1);
   const [accentFirst, setAccentFirst] = useState(true);
+  const [accentPattern, setAccentPattern] = useState<boolean[]>([true, false, false, false]);
+  const [showPendulum, setShowPendulum] = useState(false);
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
@@ -37,7 +39,7 @@ export default function MetronomePage() {
       setCurrentBeat(0);
     } else {
       metronomeRef.current = new MetronomeEngine(
-        { bpm, timeSignature, subdivision, accentFirst },
+        { bpm, timeSignature, subdivision, accentFirst, accentPattern },
         handleTick
       );
       metronomeRef.current.start();
@@ -47,9 +49,9 @@ export default function MetronomePage() {
   
   useEffect(() => {
     if (metronomeRef.current) {
-      metronomeRef.current.updateConfig({ bpm, timeSignature, subdivision, accentFirst });
+      metronomeRef.current.updateConfig({ bpm, timeSignature, subdivision, accentFirst, accentPattern });
     }
-  }, [bpm, timeSignature, subdivision, accentFirst]);
+  }, [bpm, timeSignature, subdivision, accentFirst, accentPattern]);
   
   useEffect(() => {
     return () => {
@@ -74,6 +76,14 @@ export default function MetronomePage() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  useEffect(() => {
+    const beats = timeSignature === '6/8' ? 6 : parseInt(timeSignature.split('/')[0], 10);
+    setAccentPattern((prev) => {
+      if (prev.length === beats) return prev;
+      return Array.from({ length: beats }, (_, i) => i === 0);
+    });
+  }, [timeSignature]);
   
   return (
     <ToolLayout
@@ -99,6 +109,25 @@ export default function MetronomePage() {
           onSubdivisionChange={setSubdivision}
           onAccentFirstChange={setAccentFirst}
         />
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <div>
+            <div className="mb-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">Accent Pattern</div>
+            <BeatGrid
+              timeSignature={timeSignature}
+              accentPattern={accentPattern}
+              onAccentChange={setAccentPattern}
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <input
+              type="checkbox"
+              checked={showPendulum}
+              onChange={(e) => setShowPendulum(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-300 accent-blue-500"
+            />
+            Pendulum mode
+          </label>
+        </div>
       </section>
       
       <section className="mb-8 rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-800">
@@ -109,6 +138,19 @@ export default function MetronomePage() {
             isPlaying={isPlaying}
           />
         </div>
+        {showPendulum && (
+          <div className="mt-8 flex justify-center">
+            <div className="relative h-24 w-64">
+              <div className="absolute left-1/2 top-0 h-10 w-px -translate-x-1/2 bg-zinc-300 dark:bg-zinc-600" />
+              <div
+                className="absolute left-1/2 top-10 h-12 w-px -translate-x-1/2 origin-top bg-zinc-400"
+                style={{ transform: `translateX(-50%) rotate(${(currentBeat % 2 === 0 ? -25 : 25)}deg)` }}
+              >
+                <div className="absolute -bottom-3 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full bg-blue-500" />
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="mt-8 flex justify-center gap-4">
           <button

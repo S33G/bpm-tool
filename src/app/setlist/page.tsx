@@ -219,6 +219,15 @@ export default function SetlistBuilderPage() {
                 Print
               </button>
               <button
+                onClick={() => printSetlist(activeSetlist, true)}
+                className="flex items-center gap-2 rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h10M7 16h6" />
+                </svg>
+                Print Compact
+              </button>
+              <button
                 onClick={() => downloadSetlistJson(activeSetlist)}
                 className="flex items-center gap-2 rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
               >
@@ -238,26 +247,31 @@ export default function SetlistBuilderPage() {
           
           <section className="mb-6 space-y-3">
             {activeSetlist.items.map((item, index) => (
-              editingItem?.id === item.id ? (
-                <SongEditor
-                  key={item.id}
-                  item={item}
-                  onSave={handleUpdateSong}
-                  onCancel={() => setEditingItem(null)}
-                />
-              ) : (
-                <SongCard
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  onEdit={() => setEditingItem(item)}
-                  onDelete={() => handleDeleteSong(item.id)}
-                  onMoveUp={() => handleMoveSong(index, 'up')}
-                  onMoveDown={() => handleMoveSong(index, 'down')}
-                  isFirst={index === 0}
-                  isLast={index === activeSetlist.items.length - 1}
-                />
-              )
+              <div key={item.id}>
+                {item.section && (index === 0 || activeSetlist.items[index - 1].section !== item.section) && (
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                    {item.section}
+                  </div>
+                )}
+                {editingItem?.id === item.id ? (
+                  <SongEditor
+                    item={item}
+                    onSave={handleUpdateSong}
+                    onCancel={() => setEditingItem(null)}
+                  />
+                ) : (
+                  <SongCard
+                    item={item}
+                    index={index}
+                    onEdit={() => setEditingItem(item)}
+                    onDelete={() => handleDeleteSong(item.id)}
+                    onMoveUp={() => handleMoveSong(index, 'up')}
+                    onMoveDown={() => handleMoveSong(index, 'down')}
+                    isFirst={index === 0}
+                    isLast={index === activeSetlist.items.length - 1}
+                  />
+                )}
+              </div>
             ))}
             
             {activeSetlist.items.length === 0 && !isAddingSong && (

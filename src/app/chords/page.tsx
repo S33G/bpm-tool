@@ -3,13 +3,16 @@
 import { useState } from 'react';
 import { ToolLayout } from '@/components/layout';
 import { ChordSelector, ChordDisplay, MiniKeyboard } from '@/components/chords';
+import { Select, Slider } from '@/components/ui';
 import { 
   NoteName, 
   ChordQuality, 
   Inversion, 
   Instrument,
   buildChord,
-  generateChordFilename 
+  generateChordFilename,
+  applyChordVoicing,
+  Voicing
 } from '@/lib/music';
 import { generateChordMidi, downloadMidiFile } from '@/lib/midi-export';
 import { DEFAULT_BPM } from '@/lib/constants';
@@ -19,13 +22,22 @@ export default function ChordGeneratorPage() {
   const [quality, setQuality] = useState<ChordQuality>('maj');
   const [inversion, setInversion] = useState<Inversion>('root');
   const [instrument, setInstrument] = useState<Instrument>('piano');
+  const [voicing, setVoicing] = useState<Voicing>('close');
+  const [bassNote, setBassNote] = useState<NoteName | 'none'>('none');
+  const [octaveShift, setOctaveShift] = useState(0);
   const [bpm, setBpm] = useState(DEFAULT_BPM);
   
   const chord = buildChord(root, quality, inversion, instrument);
+  const voicedChord = applyChordVoicing(chord, {
+    voicing,
+    bassNote: bassNote === 'none' ? null : bassNote,
+    octaveShift,
+  });
+  const highlightedNotes = bassNote === 'none' ? chord.notes : Array.from(new Set([...chord.notes, bassNote]));
   
   const handleDownloadMidi = () => {
-    const midiData = generateChordMidi(chord.midiNotes, bpm);
-    const filename = generateChordFilename(chord, instrument, bpm);
+    const midiData = generateChordMidi(voicedChord.midiNotes, bpm);
+    const filename = generateChordFilename(chord, instrument, bpm, voicing, bassNote === 'none' ? undefined : bassNote);
     downloadMidiFile(midiData, filename);
   };
   
@@ -45,16 +57,56 @@ export default function ChordGeneratorPage() {
           onInversionChange={setInversion}
           onInstrumentChange={setInstrument}
         />
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Select
+            label="Voicing"
+            value={voicing}
+            onChange={(value) => setVoicing(value as Voicing)}
+            options={[
+              { value: 'close', label: 'Close' },
+              { value: 'open', label: 'Open' },
+              { value: 'drop2', label: 'Drop 2' },
+            ]}
+          />
+          <Select
+            label="Bass Note"
+            value={bassNote}
+            onChange={(value) => setBassNote(value as NoteName | 'none')}
+            options={[
+              { value: 'none', label: 'None' },
+              { value: 'C', label: 'C' },
+              { value: 'C#', label: 'C#' },
+              { value: 'D', label: 'D' },
+              { value: 'D#', label: 'D#' },
+              { value: 'E', label: 'E' },
+              { value: 'F', label: 'F' },
+              { value: 'F#', label: 'F#' },
+              { value: 'G', label: 'G' },
+              { value: 'G#', label: 'G#' },
+              { value: 'A', label: 'A' },
+              { value: 'A#', label: 'A#' },
+              { value: 'B', label: 'B' },
+            ]}
+          />
+          <Slider
+            label="Octave Shift"
+            value={octaveShift}
+            min={-2}
+            max={2}
+            step={1}
+            onChange={setOctaveShift}
+          />
+        </div>
       </section>
       
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
-        <ChordDisplay chord={chord} />
+        <ChordDisplay chord={voicedChord} />
         
         <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
           <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
             Keyboard Preview
           </h3>
-          <MiniKeyboard highlightedNotes={chord.notes} />
+          <MiniKeyboard highlightedNotes={highlightedNotes} />
         </div>
       </div>
       
@@ -87,7 +139,7 @@ export default function ChordGeneratorPage() {
           </button>
         </div>
         <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-          Filename: <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-700">{generateChordFilename(chord, instrument, bpm)}</code>
+          Filename: <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-700">{generateChordFilename(chord, instrument, bpm, voicing, bassNote === 'none' ? undefined : bassNote)}</code>
         </p>
       </section>
     </ToolLayout>

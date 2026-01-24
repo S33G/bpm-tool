@@ -24,6 +24,28 @@ const TOOLS = [
     ),
   },
   {
+    href: '/circle',
+    title: 'Circle of Fifths',
+    description: 'Explore key signatures, relative keys, and diatonic chords.',
+    color: 'cyan' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.05 6.05L4.636 4.636m12.728 0l-1.414 1.414M6.05 17.95l-1.414 1.414" />
+      </svg>
+    ),
+  },
+  {
+    href: '/scales',
+    title: 'Scale Explorer',
+    description: 'Browse scales and modes. View intervals and highlight on the keyboard.',
+    color: 'cyan' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+      </svg>
+    ),
+  },
+  {
     href: '/keyboard',
     title: 'Keyboard Visualizer',
     description: 'Interactive 88-key piano visualization. Highlight chords, scales, and intervals.',
@@ -31,6 +53,17 @@ const TOOLS = [
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+    ),
+  },
+  {
+    href: '/fretboard',
+    title: 'Fretboard Visualizer',
+    description: 'Highlight chords or scales across guitar, bass, ukulele, or banjo.',
+    color: 'green' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 4h14v16H5zM9 4v16M15 4v16" />
       </svg>
     ),
   },
@@ -57,13 +90,57 @@ const TOOLS = [
     ),
   },
   {
-    href: '/scales',
-    title: 'Scale Explorer',
-    description: 'Browse scales and modes. View intervals and highlight on the keyboard.',
+    href: '/rhythm',
+    title: 'Rhythm Grid',
+    description: 'Create step-based drum patterns and export MIDI.',
+    color: 'blue' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h4v4H4zM10 6h4v4h-4zM16 6h4v4h-4zM4 12h4v4H4zM10 12h4v4h-4zM16 12h4v4h-4z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/timer',
+    title: 'Practice Timer',
+    description: 'Interval-based timer for focused practice sessions.',
+    color: 'orange' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/keyfinder',
+    title: 'Key Finder',
+    description: 'Suggest likely keys from a set of notes or chords.',
+    color: 'yellow' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a4 4 0 11-8 0 4 4 0 018 0zM12 11v8m0 0l-3-3m3 3l3-3" />
+      </svg>
+    ),
+  },
+  {
+    href: '/progression',
+    title: 'Progression Planner',
+    description: 'Build chord progressions from templates or roman numerals.',
+    color: 'purple' as const,
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h10" />
+      </svg>
+    ),
+  },
+  {
+    href: '/midi',
+    title: 'MIDI Analyzer',
+    description: 'Inspect MIDI tempo, duration, tracks, and note density.',
     color: 'cyan' as const,
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
       </svg>
     ),
   },

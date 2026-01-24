@@ -13,6 +13,8 @@ interface PianoKeyProps {
   highlightColor: string;
   onClick?: (midi: number) => void;
   showLabel?: boolean;
+  labelOverride?: string;
+  bottomLabelOverride?: string;
 }
 
 const HIGHLIGHT_COLORS: Record<string, { fill: string; text: string }> = {
@@ -36,8 +38,10 @@ export function PianoKey({
   highlightColor,
   onClick,
   showLabel = true,
+  labelOverride,
+  bottomLabelOverride,
 }: PianoKeyProps) {
-  const colors = HIGHLIGHT_COLORS[highlightColor] || HIGHLIGHT_COLORS.blue;
+  const colors = HIGHLIGHT_COLORS[highlightColor] || { fill: highlightColor, text: '#ffffff' };
   
   const getFill = () => {
     if (isHighlighted) return colors.fill;
@@ -48,7 +52,8 @@ export function PianoKey({
     return isBlack ? 'none' : '#d1d5db';
   };
   
-  const label = midiToNoteWithOctave(midi);
+  const label = bottomLabelOverride || midiToNoteWithOctave(midi);
+  const highlightLabel = labelOverride || label.replace(/\d/, '');
   
   return (
     <g
@@ -86,7 +91,7 @@ export function PianoKey({
           fill={isBlack ? colors.text : colors.text}
           className="select-none font-bold"
         >
-          {label.replace(/\d/, '')}
+          {highlightLabel}
         </text>
       )}
     </g>

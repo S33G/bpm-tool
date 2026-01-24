@@ -9,7 +9,6 @@ import { BookmarkBar } from '@/components/BookmarkBar';
 import { GenrePresets } from '@/components/GenrePresets';
 import { DelayCalculator } from '@/components/DelayCalculator';
 import { FrequencyDisplay } from '@/components/FrequencyDisplay';
-import { GrooveQuantizer } from '@/components/GrooveQuantizer';
 import { useBpmCalculations } from '@/hooks/useBpmCalculations';
 import { ToolLayout } from '@/components/layout';
 import { DEFAULT_BPM } from '@/lib/constants';
@@ -63,10 +62,6 @@ export default function BpmToolPage() {
 
       <section className="mb-8">
         <DelayCalculator delaySuggestions={delaySuggestions} />
-      </section>
-
-      <section className="mb-8">
-        <GrooveQuantizer bpm={bpm} />
       </section>
 
       <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
