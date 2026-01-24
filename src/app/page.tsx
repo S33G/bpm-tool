@@ -162,10 +162,10 @@ export default function HomePage() {
     <main className="mx-auto max-w-6xl px-4 py-8">
       <section className="mb-12 text-center">
         <h1 className="mb-4 text-4xl font-bold text-zinc-900 dark:text-white">
-          tunetool
+          GrooveLab
         </h1>
         <p className="mx-auto max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-          A suite of musician-focused utilities for timing, chords, scales, and more.
+          Musician utilities for timing, groove, and harmony.
           No synths—just analysis, visualization, and reference tools.
         </p>
       </section>

@@ -36,7 +36,7 @@ export function AppHeader() {
             href="/" 
             className="text-xl font-bold text-zinc-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
           >
-            tunetool
+            GrooveLab
           </Link>
           <nav className="hidden md:flex items-center gap-3">
             {categories.map((category, categoryIndex) => {

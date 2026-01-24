@@ -5,13 +5,13 @@ import { ToastProvider } from "@/context/ToastContext";
 import { AppHeader, AppFooter } from "@/components/layout";
 
 export const metadata: Metadata = {
-  title: "tunetool - Musician Utilities",
-  description: "A suite of musician-focused tools: BPM calculator, chord generator, keyboard visualizer, pitch analyzer, metronome, scale explorer, and setlist builder.",
-  keywords: ["music tools", "BPM", "chord generator", "piano keyboard", "pitch analyzer", "metronome", "scales", "setlist", "music production", "DAW"],
-  authors: [{ name: "tunetool" }],
+  title: "GrooveLab - Musician Utilities",
+  description: "Musician utilities for timing, groove, and harmony. Explore BPM tools, swing grids, chords, scales, and more.",
+  keywords: ["music tools", "BPM", "groove", "swing", "chord generator", "piano keyboard", "pitch analyzer", "metronome", "scales", "setlist", "music production", "DAW"],
+  authors: [{ name: "GrooveLab" }],
   openGraph: {
-    title: "tunetool - Musician Utilities",
-    description: "A suite of musician-focused tools for timing, chords, scales, and more.",
+    title: "GrooveLab - Musician Utilities",
+    description: "Musician utilities for timing, groove, and harmony.",
     type: "website",
   },
 };

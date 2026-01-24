@@ -1,21 +1,26 @@
-# BPM Toolbox
+# GrooveLab
 
-A modern, musician-friendly toolbox for timing and groove: swing timing visualization, delay time calculation, groove grids, and MIDI export.
+Musician utilities for timing, groove, and harmony.
+
+GrooveLab is a modern, musician-friendly toolbox for timing and theory work. It includes BPM tools, groove quantization, rhythm grids, chord and scale exploration, visualizers, and setlist utilities.
 
 ## Features
 
-- Groove quantization visualizer with swing presets
-- Delay time calculator for synced effects
-- MIDI export for straight, swing, and triplet grids
-- Clean, responsive UI built with Next.js and Tailwind CSS
+- BPM to milliseconds calculator with tap tempo and delay suggestions
+- Groove quantizer with swing grids and MIDI export
+- Metronome, rhythm grid, and practice timer
+- Chord generator, scale explorer, circle of fifths, and progression planner
+- Keyboard and fretboard visualizers
+- Pitch analyzer and MIDI analyzer
+- Setlist builder with export options
 
 ## Tech Stack
 
 - Next.js 14 (App Router)
 - React 18
 - Tailwind CSS
-- Tone.js (for audio playback)
-- @tonejs/midi (for MIDI export)
+- Tone.js (audio playback)
+- @tonejs/midi (MIDI export)
 
 ## Getting Started
 

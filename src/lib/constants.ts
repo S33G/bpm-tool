@@ -24,10 +24,10 @@ export const VARIATION_MULTIPLIERS = {
 } as const;
 
 export const STORAGE_KEYS = {
-  BOOKMARKS: 'tunetool-bookmarks',
-  THEME: 'tunetool-theme',
-  LAST_BPM: 'tunetool-last-bpm',
-  SETLISTS: 'tunetool-setlists',
+  BOOKMARKS: 'groovelab-bookmarks',
+  THEME: 'groovelab-theme',
+  LAST_BPM: 'groovelab-last-bpm',
+  SETLISTS: 'groovelab-setlists',
 } as const;
 
 export const TAP_TEMPO_TIMEOUT = 2000; // Reset after 2 seconds of no taps
